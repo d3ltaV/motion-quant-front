@@ -1,0 +1,134 @@
+<div class="container">
+  <header>
+    <h1>Motion Quantification Tool</h1>
+    <p>Upload a video to analyze motion and download the processed result</p>
+  </header>
+
+  <main>
+    <div class="upload-section">
+      <h2>Upload Video</h2>
+      
+      <div class="file-input-container">
+        <input 
+          type="file" 
+          id="fileInput"
+          accept="video/*" 
+          (change)="onFileSelected($event)"
+          [disabled]="isUploading()"
+        >
+        <label for="fileInput" class="file-label" [class.disabled]="isUploading()">
+          <span>{{ selectedFile() ? selectedFile()!.name : 'Choose video file...' }}</span>
+        </label>
+      </div>
+
+      @if (selectedFile()) {
+        <div class="file-info">
+          <p><strong>Selected:</strong> {{ selectedFile()!.name }}</p>
+          <p><strong>Size:</strong> {{ (selectedFile()!.size / 1024 / 1024).toFixed(2) }} MB</p>
+        </div>
+      }
+    </div>
+    <div class="seg-type">
+      <h2>Background segmentation algorithm</h2>
+      <select id="motionType" [(ngModel)]="bgSeg" name="segType">
+        <option>Sparse</option>
+        <option>Dense</option>
+      </select>
+    </div>
+
+    <div class="parameters-section">
+      <h2>Processing Parameters</h2>
+      <div class="params">
+        <div class="scale">
+          <label for="active_scale">Active Scale:</label>
+          <input 
+            type="number" 
+            id="active_scale"
+            step="0.00001"
+            [value]="parameters().active_scale"
+            (input)="onParameterChange('active_scale', $any($event.target).value)"
+            [disabled]="isUploading()"
+          >
+        </div>
+        
+        <div class="bt">
+          <label for="brightness_thresh">Brightness Threshold:</label>
+          <input 
+            type="number" 
+            id="brightness_thresh"
+            [value]="parameters().brightness_thresh"
+            (input)="onParameterChange('brightness_thresh', $any($event.target).value)"
+            [disabled]="isUploading()"
+          >
+        </div>
+        
+        <div class="et">
+          <label for="event_thresh">Event Threshold:</label>
+          <input 
+            type="number" 
+            id="event_thresh"
+            [value]="parameters().event_thresh"
+            (input)="onParameterChange('event_thresh', $any($event.target).value)"
+            [disabled]="isUploading()"
+          >
+        </div>
+        
+        <div class="n">
+          <label for="neighborhood">Neighborhood:</label>
+          <input 
+            type="number" 
+            id="neighborhood"
+            [value]="parameters().neighborhood"
+            (input)="onParameterChange('neighborhood', $any($event.target).value)"
+            [disabled]="isUploading()"
+          >
+        </div>
+      </div>
+      
+      <button 
+        type="button" 
+        class="reset-btn"
+        (click)="resetToDefaults()"
+        [disabled]="isUploading()"
+      >
+        Reset to Defaults
+      </button>
+    </div>
+    <div class="action-section">
+      <button 
+        type="button" 
+        class="upload-btn"
+        (click)="onUpload()" 
+        [disabled]="!selectedFile() || isUploading()"
+      >
+        @if (!isUploading()) {
+          <span>Process Video</span>
+        } @else {
+          <span>Processing...</span>
+        }
+      </button>
+      
+      @if (isUploading()) {
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="uploadProgress()"></div>
+          </div>
+          <p class="progress-text">{{ uploadProgress() }}% - Processing your video...</p>
+        </div>
+      }
+    </div>
+
+    <!-- Messages -->
+    @if (errorMessage()) {
+      <div class="message error-message">
+        {{ errorMessage() }}
+      </div>
+    }
+    
+    @if (successMessage()) {
+      <div class="message success-message">
+        {{ successMessage() }}
+      </div>
+    }
+  </main>
+</div>
