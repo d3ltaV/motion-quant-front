@@ -21,8 +21,8 @@ export class Home {
 
   parameters = signal({
     active_scale: 0.08152,
-    brightness_thresh: 6,
-    event_thresh: 215,
+    brightness_thresh: 0.15,
+    event_thresh: 0.5,
     neighborhood: 50
   });
 
@@ -119,8 +119,8 @@ export class Home {
   resetToDefaults() {
     this.parameters.set({
       active_scale: 0.08152,
-      brightness_thresh: 6,
-      event_thresh: 215,
+      brightness_thresh: 0.15,
+      event_thresh: 0.5,
       neighborhood: 50
     });
   }
