@@ -1,0 +1,76 @@
+<div class="container">
+    <div class="upload-section">
+        <h3>Upload Video</h3>
+        <div class="file-input-container">
+        <input 
+            type="file" 
+            id="fileInput"
+            accept="video/*" 
+            (change)="onFileSelected($event)"
+            [disabled]="isUploading()"
+        >
+        <label for="fileInput" class="file-label" [class.disabled]="isUploading()">
+            <span>{{ selectedFile() ? selectedFile()!.name : 'Choose video file...' }}</span>
+        </label>
+        </div>
+        @if (selectedFile()) {
+        <div class="file-info">
+            <p><strong>Selected:</strong> {{ selectedFile()!.name }}</p>
+            <p><strong>Size:</strong> {{ (selectedFile()!.size / 1024 / 1024).toFixed(2) }} MB</p>
+        </div>
+        }
+    </div>
+    <div class="vid-info-section">
+    <h4>Video information</h4>
+    <div class="info">
+      <div class="rate">
+        <label for="frame-rate">Frame rate:</label>
+        <input 
+          type="number" id="frame-rate"
+          [value]="vidParams().frame_rate" (input)="onParameterChange('frame_rate', $any($event.target).value)" [disabled]="isUploading()"
+        >
+      </div>
+      
+      <div class="resolution">
+        <label for="res">Resolution:</label>
+        <select id="res"
+        [value]="vidParams().resolution.width + 'x' + vidParams().resolution.height"
+        (change)="onResolutionSelect($event)"
+        [disabled]="isUploading()">
+          <option value="3840x2160">4K (3840x2160)</option>
+          <option value="2560x1440">1440p (2560x1440)</option>
+          <option value="1920x1080">1080p (1920x1080)</option>
+          <option value="1280x720">720p (1280x720)</option>
+          <option value="854x480">480p (854x480)</option>
+          <option value="640x360">360p (640x360)</option>
+        </select>
+      </div>
+      <div class="distance">
+        <label for="dist">Distance from target (ruler):</label>
+        <input type="number" id="dist" [value]="vidParams().distance" (input)="onParameterChange('distance', $any($event.target).value)" [disabled]="isUploading()">
+      </div>
+    <div class="length">
+        <label for="len">Real ruler length:</label>
+        <input 
+          type="number" id="len"
+          [value]="vidParams().ruler_length" (input)="onParameterChange('ruler_length', $any($event.target).value)" [disabled]="isUploading()"
+        >
+      </div>
+    </div>
+    <div class="action-section">
+        <button type="button" class="upload-btn" (click)="upload()" [disabled]="!selectedFile() || isUploading()">
+            @if (!isUploading()) {
+                <span>Process Video</span>
+            } @else {
+                <span>Processing...</span>
+            }
+        </button>
+    </div>
+
+    @if (errorMessage()) {
+        <div class="message error-message"> {{ errorMessage() }} </div>
+    }
+    @if (successMessage()) {
+        <div class="message success-message"> {{ successMessage() }} </div>
+    }
+</div>

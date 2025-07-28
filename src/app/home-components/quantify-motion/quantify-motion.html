@@ -1,0 +1,149 @@
+<div class="container">
+  <div class="upload-section">
+    <h3>Upload Video</h3>
+    <div class="file-input-container">
+      <input 
+        type="file" 
+        id="fileInput"
+        accept="video/*" 
+        (change)="onFileSelected($event)"
+        [disabled]="isUploading()"
+      >
+      <label for="fileInput" class="file-label" [class.disabled]="isUploading()">
+        <span>{{ selectedFile() ? selectedFile()!.name : 'Choose video file...' }}</span>
+      </label>
+    </div>
+    @if (selectedFile()) {
+      <div class="file-info">
+        <p><strong>Selected:</strong> {{ selectedFile()!.name }}</p>
+        <p><strong>Size:</strong> {{ (selectedFile()!.size / 1024 / 1024).toFixed(2) }} MB</p>
+      </div>
+    }
+  </div>
+  <div class="seg-type">
+    <h4>Processing algorithm</h4>
+    <select id="motionType" [value]="processAlgo()" (change)="onProcessAlgoChange($event)" name="processType">
+      <option>Sparse with moving camera</option>
+      <option>Dense with moving camera</option>
+      <option>Sparse without moving camera</option>
+	</select>
+  </div>
+
+  <div class="parameters-section">
+    <h4>Processing Parameters</h4>
+    <div class="params">
+      <div class="scale">
+        <label for="active_scale">Active Scale:</label>
+        <input 
+          type="number" 
+          id="active_scale"
+          step="0.00001"
+          [value]="parameters().active_scale" 
+          (input)="onParameterChange('active_scale', $any($event.target).value)" 
+          [disabled]="isUploading()"
+        >
+      </div>
+      
+      <div class="bt">
+        <label for="brightness_thresh">Brightness Threshold:</label>
+        <input 
+          type="number" 
+          id="brightness_thresh"
+          [value]="parameters().brightness_thresh" 
+          (input)="onParameterChange('brightness_thresh', $any($event.target).value)" 
+          [disabled]="isUploading()"
+        >
+      </div>
+      
+      <div class="et">
+        <label for="event_thresh">Event Threshold:</label>
+        <input 
+          type="number" 
+          id="event_thresh"
+          [value]="parameters().event_thresh" 
+          (input)="onParameterChange('event_thresh', $any($event.target).value)" 
+          [disabled]="isUploading()"
+        >
+      </div>
+    
+      <div class="n">
+        <label for="neighborhood">Neighborhood:</label>
+        <input 
+          type="number" 
+          id="neighborhood"
+          [value]="parameters().neighborhood" 
+          (input)="onParameterChange('neighborhood', $any($event.target).value)" 
+          [disabled]="isUploading()"
+        >
+      </div>
+
+      <div class="rate">
+        <label for="frame-rate">Frame rate:</label>
+        <input 
+          type="number" 
+          id="frame-rate"
+          [value]="parameters().frame_rate" 
+          (input)="onParameterChange('frame_rate', $any($event.target).value)" 
+          [disabled]="isUploading()"
+        >
+      </div>
+      
+      <div class="resolution">
+        <label for="res">Resolution:</label>
+        <select id="res"
+        [value]="parameters().resolution.width + 'x' + parameters().resolution.height"
+        (change)="onResolutionSelect($event)"
+        [disabled]="isUploading()">
+          <option value="3840x2160">4K (3840x2160)</option>
+          <option value="2560x1440">1440p (2560x1440)</option>
+          <option value="1920x1080">1080p (1920x1080)</option>
+          <option value="1280x720">720p (1280x720)</option>
+          <option value="854x480">480p (854x480)</option>
+          <option value="640x360">360p (640x360)</option>
+        </select>
+      </div>
+    </div>
+    <div class ="distance">
+      <label for="dist">Distance from camera to target:</label>
+      <input type="number" id="dist" [value]="parameters().distance" (input)="onParameterChange('distance',  $any($event.target).value)" [disabled]="isUploading()">
+    </div>
+    <button type="button" class="reset-btn" (click)="resetToDefaults()" [disabled]="isUploading()">
+      Reset to Defaults
+    </button>
+  </div>
+  
+  <div class="action-section">
+    <button 
+      type="button" 
+      class="upload-btn"
+      (click)="upload()" 
+      [disabled]="!selectedFile() || isUploading()"
+    >
+      @if (!isUploading()) {
+        <span>Process Video</span>
+      } @else {
+        <span>Processing...</span>
+      }
+    </button>
+    
+    @if (isUploading()) {
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="uploadProgress()"></div>
+        </div>
+        <p class="progress-text">
+          @if (processingStatus()) {
+            {{ processingStatus() }}
+          }
+        </p>
+      </div>
+    }
+  </div>
+
+  @if (errorMessage()) {
+    <div class="message error-message"> {{ errorMessage() }} </div>
+  }
+  @if (successMessage()) {
+    <div class="message success-message"> {{ successMessage() }} </div>
+  }
+</div>
