@@ -1,124 +1,110 @@
 <div class="container">
-  <div class="upload-section">
-    <h3>Upload Video</h3>
-    <div class="file-input-container">
-      <input 
-        type="file" 
-        id="fileInput"
-        accept="video/*" 
-        (change)="onFileSelected($event)"
-        [disabled]="isUploading()"
-      >
-      <label for="fileInput" class="file-label" [class.disabled]="isUploading()">
-        <span>{{ selectedFile() ? selectedFile()!.name : 'Choose video file...' }}</span>
-      </label>
-    </div>
-    @if (selectedFile()) {
-      <div class="file-info">
+  <div class="top">
+    <div class="upload-section">
+      <h3>Upload Video</h3>
+      <div class="input-sec">
+        <input type="file" #fileInput accept="video/*" (change)="onFileSelected($event)" [disabled]="isUploading()" style="display: none;">
+        <button class="upload-btn" matButton="tonal" (click)="fileInput.click()" [disabled]="isUploading()"> Choose Video File </button>
+      </div>
+      <div class="file-info" *ngIf="selectedFile()">
         <p><strong>Selected:</strong> {{ selectedFile()!.name }}</p>
         <p><strong>Size:</strong> {{ (selectedFile()!.size / 1024 / 1024).toFixed(2) }} MB</p>
       </div>
-    }
+    </div>
+
+    <div class="algo-section">
+      <h3>Processing algorithm</h3>
+      <mat-form-field>
+        <mat-label>Algorithm</mat-label>
+        <mat-select class="motionType" [value]="processAlgo()" (selectionChange)="onProcessAlgoChange($event.value)">
+          <mat-option value="Sparse with moving camera">Sparse with moving camera</mat-option>
+          <mat-option value="Dense with moving camera">Dense with moving camera</mat-option>
+          <mat-option value="Sparse without moving camera">Sparse without moving camera</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
   </div>
-  <div class="seg-type">
-    <h4>Processing algorithm</h4>
-    <select id="motionType" [value]="processAlgo()" (change)="onProcessAlgoChange($event)" name="processType">
-      <option>Sparse with moving camera</option>
-      <option>Dense with moving camera</option>
-      <option>Sparse without moving camera</option>
-	</select>
-  </div>
+
 
   <div class="parameters-section">
-    <h4>Processing Parameters</h4>
+    <h3>Processing Parameters</h3>
     <div class="params">
-      <div class="scale">
-        <label for="active_scale">Active Scale:</label>
-        <input 
-          type="number" 
-          id="active_scale"
-          step="0.00001"
-          [value]="parameters().active_scale" 
-          (input)="onParameterChange('active_scale', $any($event.target).value)" 
-          [disabled]="isUploading()"
-        >
+      <div class="zero">
+        <div class="sec-z">
+          <mat-form-field class="scale">
+            <mat-label>Active scale (cm):</mat-label>
+            <input matInput type="number" step="0.00001" [value]="parameters().active_scale" (input)="onParameterChange('active_scale', $any($event.target).value)" [disabled]="isUploading()">
+          </mat-form-field>
+          <p>Physical scale in centimeter of each pixel. Higher resolution means smaller physical scale.</p>
+        </div>
+        
+        <div class="sec-z">
+          <mat-form-field class="adjust">
+            <mat-label>Adjust for scaling video resolution?</mat-label>
+            <mat-select class="adjustOption" [value]="parameters().adjust_for_resolution.toString()" (selectionChange)="onYesNo(($event.value))" [disabled]="isUploading()">
+              <mat-option value="false">No</mat-option>
+              <mat-option value="true">Yes</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <p>If you do not want to adjust the scaling value based on the scaling video's resolution, select 'No'.</p>
+        </div>
       </div>
       
-      <div class="bt">
-        <label for="brightness_thresh">Brightness Threshold:</label>
-        <input 
-          type="number" 
-          id="brightness_thresh"
-          [value]="parameters().brightness_thresh" 
-          (input)="onParameterChange('brightness_thresh', $any($event.target).value)" 
-          [disabled]="isUploading()"
-        >
-      </div>
-      
-      <div class="et">
-        <label for="event_thresh">Event Threshold:</label>
-        <input 
-          type="number" 
-          id="event_thresh"
-          [value]="parameters().event_thresh" 
-          (input)="onParameterChange('event_thresh', $any($event.target).value)" 
-          [disabled]="isUploading()"
-        >
-      </div>
-    
-      <div class="n">
-        <label for="neighborhood">Neighborhood:</label>
-        <input 
-          type="number" 
-          id="neighborhood"
-          [value]="parameters().neighborhood" 
-          (input)="onParameterChange('neighborhood', $any($event.target).value)" 
-          [disabled]="isUploading()"
-        >
+      <div class="one">
+        <div class="sec">
+          <mat-form-field class="bt">
+            <mat-label>Brightness threshold:</mat-label>
+            <input matInput type="number" [value]="parameters().brightness_thresh" (input)="onParameterChange('brightness_thresh', $any($event.target).value)" [disabled]="isUploading()">
+          </mat-form-field>
+          <p>Threshold for considering a pixel intensity change as an event during background segmentation. 
+            Recommended range is 0.05-0.3, and minimum is 0 (all pixels trigger events) and maximum is 1 (no pixels trigger events). 
+            A higher value is stricter.</p>
+        </div>
+
+        <div class="sec">
+          <mat-form-field class="et">
+            <mat-label>Event threshold (px):</mat-label>
+            <input matInput type="number" [value]="parameters().event_thresh" (input)="onParameterChange('event_thresh', $any($event.target).value)" [disabled]="isUploading()">
+          </mat-form-field>
+          <p>Proportion of frames in which a pixel must exceed brightness threshold to be considered foreground. Range is 0 to 1; if lower, such as 0.2, even changes in a few frames would mark a pixel as important.</p>
+        </div>
+
+        <div class="sec">
+          <mat-form-field class="n">
+            <mat-label>Neighborhood (px):</mat-label>
+            <input matInput type="number" [value]="parameters().neighborhood" (input)="onParameterChange('neighborhood', $any($event.target).value)" [disabled]="isUploading()">
+          </mat-form-field>
+          <p>If a pixel is marked as important, surrounding neighborhood of x pixels is also marked as important.</p>
+        </div>
       </div>
 
-      <div class="rate">
-        <label for="frame-rate">Frame rate:</label>
-        <input 
-          type="number" 
-          id="frame-rate"
-          [value]="parameters().frame_rate" 
-          (input)="onParameterChange('frame_rate', $any($event.target).value)" 
-          [disabled]="isUploading()"
-        >
-      </div>
-      
-      <div class="resolution">
-        <label for="res">Resolution:</label>
-        <select id="res"
-        [value]="parameters().resolution.width + 'x' + parameters().resolution.height"
-        (change)="onResolutionSelect($event)"
-        [disabled]="isUploading()">
-          <option value="3840x2160">4K (3840x2160)</option>
-          <option value="2560x1440">1440p (2560x1440)</option>
-          <option value="1920x1080">1080p (1920x1080)</option>
-          <option value="1280x720">720p (1280x720)</option>
-          <option value="854x480">480p (854x480)</option>
-          <option value="640x360">360p (640x360)</option>
-        </select>
+      <div class="two">
+        <mat-form-field class="rate">
+          <mat-label>Frame rate (/s):</mat-label>
+          <input matInput type="number" [value]="parameters().frame_rate"  (input)="onParameterChange('frame_rate', $any($event.target).value)"  [disabled]="isUploading()">
+        </mat-form-field>
+        <mat-form-field class="resolution">
+          <mat-label>Resolution</mat-label>
+            <mat-select [value]="parameters().resolution.width + 'x' + parameters().resolution.height" (selectionChange)="onResolutionSelect($event.value)" [disabled]="isUploading()">
+              <mat-option value="3840x2160">4K (3840x2160)</mat-option>
+              <mat-option value="2560x1440">1440p (2560x1440)</mat-option>
+              <mat-option value="1920x1080">1080p (1920x1080)</mat-option>
+              <mat-option value="1280x720">720p (1280x720)</mat-option>
+              <mat-option value="854x480">480p (854x480)</mat-option>
+              <mat-option value="640x360">360p (640x360)</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class="distance">
+          <mat-label>Distance to subject (cm):</mat-label>
+          <input matInput type="number" [value]="parameters().distance" (input)="onParameterChange('distance',  $any($event.target).value)" [disabled]="isUploading()">
+        </mat-form-field>
       </div>
     </div>
-    <div class ="distance">
-      <label for="dist">Distance from camera to target:</label>
-      <input type="number" id="dist" [value]="parameters().distance" (input)="onParameterChange('distance',  $any($event.target).value)" [disabled]="isUploading()">
-    </div>
-    <button type="button" class="reset-btn" (click)="resetToDefaults()" [disabled]="isUploading()">
-      Reset to Defaults
-    </button>
+    <button matButton="tonal" class="reset-btn" (click)="resetToDefaults()" [disabled]="isUploading()">Reset to Defaults</button>
   </div>
   
-  <div class="action-section">
-    <button 
-      type="button" 
-      class="upload-btn"
-      (click)="upload()" 
-      [disabled]="!selectedFile() || isUploading()"
-    >
+  <div class="bottom">
+    <button matButton="tonal" class="upload-btn" (click)="upload()" [disabled]="!selectedFile() || isUploading()">
       @if (!isUploading()) {
         <span>Process Video</span>
       } @else {
@@ -127,23 +113,18 @@
     </button>
     
     @if (isUploading()) {
-      <div class="progress-container">
-        <div class="progress-bar">
-          <div class="progress-fill" [style.width.%]="uploadProgress()"></div>
-        </div>
-        <p class="progress-text">
-          @if (processingStatus()) {
-            {{ processingStatus() }}
-          }
-        </p>
-      </div>
+      <p class="progress-text">
+        @if (processingStatus()) {
+          {{ processingStatus() }}
+        }
+      </p>
     }
   </div>
 
   @if (errorMessage()) {
-    <div class="message error-message"> {{ errorMessage() }} </div>
+    <div class="error-message"> {{ errorMessage() }} </div>
   }
   @if (successMessage()) {
-    <div class="message success-message"> {{ successMessage() }} </div>
+    <div class="success-message"> {{ successMessage() }} </div>
   }
 </div>

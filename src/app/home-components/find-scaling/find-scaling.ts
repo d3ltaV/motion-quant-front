@@ -1,6 +1,11 @@
 import { ChangeDetectionStrategy, Component, signal, Output, OutputEmitterRef } from '@angular/core';
 import { HttpEventType, HttpClient} from '@angular/common/http';
 import { CommonModule} from '@angular/common';
+import { MatButtonModule } from '@angular/material/button'; 
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule, MatSelectChange } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatOptionModule } from '@angular/material/core';
 
 export interface VidParams {
   frame_rate: number;
@@ -15,7 +20,7 @@ export interface VidParams {
 
 @Component({
   selector: 'app-find-scaling',
-  imports: [],
+  imports: [CommonModule, MatButtonModule, MatSelectModule, MatInputModule, MatFormFieldModule, MatOptionModule],
   templateUrl: './find-scaling.html',
   styleUrl: './find-scaling.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -35,7 +40,7 @@ export class FindScaling {
     resolution: {
       height: 720, 
       width: 1280
-    }
+    }, 
   });
 
   onFileSelected(event: any) {

@@ -1,7 +1,13 @@
 <div class="container">
   <h1 class="header">Motion Quantification Tool</h1>
-  <h2 class="scale-header">Determine pixel scale</h2>
-  <app-find-scaling (scaleAndParams)="onScaleAndParams($event)"></app-find-scaling>
-  <h2 class="motion-quant-header">Motion analysis</h2>
-  <app-quantify-motion [scale]="scaleForMotionAnalysis()" [incomingVidParams]="vidParamsForMotion()"></app-quantify-motion>
+  <div class="body">
+    <div class="scale">
+      <h2 class="scale-header">Determine pixel scale</h2>
+      <app-find-scaling (scaleAndParams)="onScaleAndParams($event)"></app-find-scaling>
+    </div>
+    <div class="analysis">
+      <h2 class="motion-quant-header">Motion analysis</h2>
+      <app-quantify-motion [scale]="scaleForMotionAnalysis()" [incomingVidParams]="vidParamsForMotion()"></app-quantify-motion>
+    </div>
+  </div>
 </div>

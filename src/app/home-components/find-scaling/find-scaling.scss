@@ -1,0 +1,29 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    
+    .upload-section {
+        .input-sec {
+            padding-bottom: 2vw;
+            .upload-btn {
+                width: 10vw;
+            }
+        }
+    }
+    .vid-info-section {
+        padding-bottom: 4vh;
+        .info {
+            display: flex;
+            flex-direction: column;
+            gap: 4vh;
+            .one {
+                display: flex;
+                gap: 2vw;
+            }
+            .two {
+                display: flex;
+                gap: 2vw;
+            }
+        }
+    }
+}

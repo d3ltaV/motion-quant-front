@@ -3,6 +3,11 @@ import { HttpClient, HttpEventType } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { saveAs } from 'file-saver';
+import { MatButtonModule } from '@angular/material/button'; 
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule, MatSelectChange } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatOptionModule } from '@angular/material/core';
 
 interface ProcessingParameters {
   active_scale: number;
@@ -22,11 +27,12 @@ interface ProcessingParameters {
   };
   scale_dist: number;
   scale_ruler_length: number;
+  adjust_for_resolution: boolean;
 }
 
 @Component({
   selector: 'app-quantify-motion',
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, MatButtonModule, MatSelectModule, MatInputModule, MatFormFieldModule, MatOptionModule],
   templateUrl: './quantify-motion.html',
   styleUrl: './quantify-motion.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -39,7 +45,7 @@ export class QuantifyMotion {
   errorMessage = signal('');
   successMessage = signal('');
   processAlgo = signal("Sparse with moving camera"); 
-  
+
   scaleSignal = signal<number | null>(null);
   vidParamsSignal = signal<any>(null);
 
@@ -68,16 +74,12 @@ export class QuantifyMotion {
       r_height: 720
     },
     scale_dist: 100,
-    scale_ruler_length: 30
+    scale_ruler_length: 30, 
+    adjust_for_resolution: false
   };
 
   parameters = signal<ProcessingParameters>({ ...this.defaultParameters });
 
-  onProcessAlgoChange(event: Event) {
-    this.processAlgo.set((event.target as HTMLSelectElement).value);
-  }
-
-  
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file && this.validate(file)) {
@@ -171,20 +173,26 @@ export class QuantifyMotion {
     });
   }
 
-  onParameterChange(param: string, value: string) {
-    const numValue = parseFloat(value);
-    if (!isNaN(numValue)) {
-      const currentParams = this.parameters();
-      this.parameters.set({
-        ...currentParams,
-        [param]: numValue
-      });
-    }
+  onParameterChange(param: string, value: any) {
+    const currentParams = this.parameters();
+
+    let parsed: any = value;
+    if (value === 'true' || value === true) parsed = true;
+    else if (value === 'false' || value === false) parsed = false;
+    else if (!isNaN(parseFloat(value))) parsed = parseFloat(value);
+
+    this.parameters.set({
+      ...currentParams,
+      [param]: parsed
+    });
   }
 
-  onResolutionSelect(event: Event) {
-    const val = (event.target as HTMLSelectElement).value;
-    const [width, height] = val.split('x').map(Number);
+  onProcessAlgoChange(value: string) {
+    this.processAlgo.set(value);
+  }
+
+  onResolutionSelect(value: string) {
+    const [width, height] = value.split('x').map(Number);
 
     if (!isNaN(width) && !isNaN(height)) {
       const currentParams = this.parameters();
@@ -194,6 +202,16 @@ export class QuantifyMotion {
       });
     }
   }
+
+  onYesNo(value: string) {
+    const currentParams = this.parameters();
+    const boolValue = value === 'true';
+    this.parameters.set({
+      ...currentParams,
+      adjust_for_resolution: boolValue
+    });
+  }
+
 
   resetToDefaults() {
     this.parameters.set({ ...this.defaultParameters });

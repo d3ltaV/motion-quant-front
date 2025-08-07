@@ -1,0 +1,62 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    
+  .top {
+    display: flex;
+    gap: 3vw;
+    .upload-section {
+      .input-sec {
+        padding-bottom: 1vh;
+        .upload-btn {
+          width: 10vw;
+        }
+      }
+    }
+    .algo-section {
+      mat-form-field {
+        width: 12vw;
+      }
+    }
+  }
+  .parameters-section {
+    padding-bottom: 4vh;
+
+    .params {
+      display: flex;
+      flex-direction: column;
+      gap: 2vh;
+      
+      .zero {
+        display: flex;
+        gap: 2vw;
+        .sec-z {
+          width: 12vw;
+        }
+      }
+      .one {
+        display: flex;
+        gap: 2vw;
+        .sec {
+          width: 12vw;
+        }
+      }
+      .two {
+        display: flex;
+        gap: 2vw;
+      }
+      mat-form-field {
+        width: 12vw;
+      }
+    }
+
+    .reset-btn {
+        width: 10vw;
+    }
+  }
+  .bottom {
+    .upload-btn {
+        width: 10vw;
+    }
+  }
+}
