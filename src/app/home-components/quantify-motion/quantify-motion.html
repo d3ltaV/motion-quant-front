@@ -6,10 +6,12 @@
         <input type="file" #fileInput accept="video/*" (change)="onFileSelected($event)" [disabled]="isUploading()" style="display: none;">
         <button class="upload-btn" matButton="tonal" (click)="fileInput.click()" [disabled]="isUploading()"> Choose Video File </button>
       </div>
-      <div class="file-info" *ngIf="selectedFile()">
-        <p><strong>Selected:</strong> {{ selectedFile()!.name }}</p>
-        <p><strong>Size:</strong> {{ (selectedFile()!.size / 1024 / 1024).toFixed(2) }} MB</p>
-      </div>
+      @if (selectedFile()) {
+        <div class="file-info">
+          <p><strong>Selected:</strong> {{ selectedFile()!.name }}</p>
+          <p><strong>Size:</strong> {{ (selectedFile()!.size / 1024 / 1024).toFixed(2) }} MB</p>
+        </div>
+      }
     </div>
 
     <div class="algo-section">
@@ -17,14 +19,72 @@
       <mat-form-field>
         <mat-label>Algorithm</mat-label>
         <mat-select class="motionType" [value]="processAlgo()" (selectionChange)="onProcessAlgoChange($event.value)">
-          <mat-option value="Sparse with moving camera">Sparse with moving camera</mat-option>
-          <mat-option value="Dense with moving camera">Dense with moving camera</mat-option>
-          <mat-option value="Sparse without moving camera">Sparse without moving camera</mat-option>
+          <mat-option value="Sparse with moving camera">Sparse with attention</mat-option>
+          <mat-option value="Dense with moving camera">Dense with attention</mat-option>
+          <mat-option value="Sparse without moving camera">Sparse</mat-option>
+          <mat-option value="Sparse with bounding box">Sparse with bounding box</mat-option>
         </mat-select>
       </mat-form-field>
     </div>
   </div>
+  @if (drawBoxSec()) {
+    <div class="db">
+      <div class="box-type">
+        <h3>Create a bounding box</h3>
+        <mat-form-field>
+          <mat-label>Type of input</mat-label>
+          <mat-select class="boxInputType" [value]="boxType()" (selectionChange)="onBoxTypeChange($event.value)">
+            <mat-option value="Enter coords">Enter coords</mat-option>
+            <mat-option value="Draw box">Draw box</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      @if (enterCoordsSec()) {
+        <div class="coords">
+          <div class="tc">
+            <mat-form-field class="c">
+              <mat-label>Top left X</mat-label>
+              <input matInput type="number" [value]="parameters().tlx" (input)="onParameterChange('tlx', $any($event.target).value)" [disabled]="isUploading()">
+            </mat-form-field>
+            <mat-form-field class="c">
+              <mat-label>Top left Y</mat-label>
+              <input matInput type="number" [value]="parameters().tly" (input)="onParameterChange('tly', $any($event.target).value)" [disabled]="isUploading()">
+            </mat-form-field>
+            <mat-form-field class="c">
+              <mat-label>Top right X</mat-label>
+              <input matInput type="number" [value]="parameters().trx" (input)="onParameterChange('trx', $any($event.target).value)" [disabled]="isUploading()">
+            </mat-form-field>
+            <mat-form-field class="c">
+              <mat-label>Top right Y</mat-label>
+              <input matInput type="number" [value]="parameters().try" (input)="onParameterChange('try', $any($event.target).value)" [disabled]="isUploading()">
+            </mat-form-field>
+          </div>
+          <div class="bc">
+            <mat-form-field class="c">
+              <mat-label>Bottom left X</mat-label>
+              <input matInput type="number" [value]="parameters().blx" (input)="onParameterChange('blx', $any($event.target).value)" [disabled]="isUploading()">
+            </mat-form-field>
+            <mat-form-field class="c">
+              <mat-label>Bottom left Y</mat-label>
+              <input matInput type="number" [value]="parameters().bly" (input)="onParameterChange('bly', $any($event.target).value)" [disabled]="isUploading()">
+            </mat-form-field>
+            <mat-form-field class="c">
+              <mat-label>Bottom right X</mat-label>
+              <input matInput type="number" [value]="parameters().brx" (input)="onParameterChange('brx', $any($event.target).value)" [disabled]="isUploading()">
+            </mat-form-field>
+            <mat-form-field class="c">
+              <mat-label>Bottom right Y</mat-label>
+              <input matInput type="number" [value]="parameters().bry" (input)="onParameterChange('bry', $any($event.target).value)" [disabled]="isUploading()">
+            </mat-form-field>
+          </div>
+        </div>
+      } 
+      <div class="draw">
 
+      </div>
+    </div>
+  }
+  
 
   <div class="parameters-section">
     <h3>Processing Parameters</h3>

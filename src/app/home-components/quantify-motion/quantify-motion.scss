@@ -19,6 +19,23 @@
       }
     }
   }
+  .db {
+    .coords {
+      display: flex;
+      flex-direction: column;
+      mat-form-field {
+        width: 8vw;
+      }
+      .tc {
+        display: flex;
+        gap: 1vw;
+      }
+      .bc {
+        display: flex;
+        gap: 1vw;
+      }
+    }
+  }
   .parameters-section {
     padding-bottom: 4vh;
 

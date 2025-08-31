@@ -28,6 +28,14 @@ interface ProcessingParameters {
   scale_dist: number;
   scale_ruler_length: number;
   adjust_for_resolution: boolean;
+  tlx: number;
+  tly: number;
+  trx: number;
+  try: number;
+  blx: number;
+  bly: number;
+  brx: number;
+  bry: number;
 }
 
 @Component({
@@ -44,7 +52,8 @@ export class QuantifyMotion {
   processingStatus = signal('');
   errorMessage = signal('');
   successMessage = signal('');
-  processAlgo = signal("Sparse with moving camera"); 
+  processAlgo = signal("Sparse with bounding box"); 
+  boxType = signal("Enter coords")
 
   scaleSignal = signal<number | null>(null);
   vidParamsSignal = signal<any>(null);
@@ -75,7 +84,15 @@ export class QuantifyMotion {
     },
     scale_dist: 100,
     scale_ruler_length: 30, 
-    adjust_for_resolution: false
+    adjust_for_resolution: false,
+    tlx: 250,
+    tly: 0,
+    trx: 1100,
+    try: 0,
+    blx: 250,
+    bly: 680,
+    brx: 1100,
+    bry: 680
   };
 
   parameters = signal<ProcessingParameters>({ ...this.defaultParameters });
@@ -97,6 +114,19 @@ export class QuantifyMotion {
     return file.type.startsWith('video/');
   }
 
+  drawBoxSec() {
+    if (this.processAlgo() == 'Sparse with bounding box') {
+      return true;
+    }
+    return false;
+  }
+  enterCoordsSec() {
+    if (this.boxType() == 'Enter coords') {
+      return true;
+    }
+    return false;
+  }
+  
   upload() {
     const file = this.selectedFile();
     if (!file) {
@@ -185,6 +215,10 @@ export class QuantifyMotion {
       ...currentParams,
       [param]: parsed
     });
+  }
+  
+  onBoxTypeChange(value: string) {
+    this.boxType.set(value);
   }
 
   onProcessAlgoChange(value: string) {
